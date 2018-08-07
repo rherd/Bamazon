@@ -21,7 +21,7 @@
 
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-var cTable = require('console.table');
+var cTable = require("console.table");
 
 var connection = mysql.createConnection({
   host: "Localhost",
@@ -105,7 +105,7 @@ function howMany(id) {
               console.log("\n-----------------------------------------\n");
               updateDB(id, answer.quantity);
             } else {
-              console.log("You ordered too many!");
+              console.log("You ordered too many! Please order a smaller quantity or pick make another purchase.");
 
               console.log("\n-----------------------------------------\n");
               startUp();
@@ -151,8 +151,26 @@ function updateDB(id, quantity) {
     function(err2, res2) {
       if (err2) throw err2;
       console.log("Your total price is $" + res2[0].total_price);
+      console.log("\n-----------------------------------------\n");
+      buyAgain();
     }
-  );
+  )
+
+}
+
+function buyAgain() {
+    inquirer.prompt({
+        name: "yesno",
+        type: "confirm",
+        message: "Would you like to make another purchase?"
+    }).then(function(answer){
+        if(answer.yesno) {
+            displayData();
+        } else {
+            console.log("Thank you for shopping at Bamazon!");
+            connection.end();
+        }
+    })
 }
 // This means updating the SQL database to reflect the remaining quantity.
 // Once the update goes through, show the customer the total cost of their purchase.
